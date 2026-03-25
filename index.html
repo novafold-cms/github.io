@@ -1,0 +1,804 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Faiz — BrandBear</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@300;400;600;700&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --night:#222222;
+  --kiwi:#89E900;
+  --kdim:rgba(137,233,0,0.07);
+  --black:#0d0d0d;
+  --white:#f0f0ee;
+  --mid:#666;
+  --dim:#2a2a2a;
+  --bebas:'Bebas Neue',sans-serif;
+  --body:'Barlow',sans-serif;
+  --mono:'DM Mono',monospace;
+}
+html{scroll-behavior:smooth;}
+body{background:var(--black);color:var(--white);font-family:var(--body);overflow-x:hidden;cursor:none;}
+
+/* ── CURSOR ── */
+#cur{position:fixed;width:10px;height:10px;background:var(--kiwi);border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);mix-blend-mode:exclusion;transition:width .22s,height .22s;top:0;left:0;}
+#cur.big{width:54px;height:54px;}
+
+/* ── WA FLOAT ── */
+.wa{position:fixed;bottom:28px;right:28px;z-index:900;width:54px;height:54px;background:var(--kiwi);border-radius:50%;display:flex;align-items:center;justify-content:center;text-decoration:none;box-shadow:0 4px 24px rgba(137,233,0,0.3);cursor:none;transition:transform .25s,box-shadow .25s;}
+.wa:hover{transform:scale(1.1);box-shadow:0 8px 32px rgba(137,233,0,0.5);}
+.wa svg{width:26px;height:26px;fill:var(--black);}
+.wa-ring{position:absolute;inset:-6px;border-radius:50%;border:2px solid rgba(137,233,0,0.35);animation:waring 2s ease infinite;}
+@keyframes waring{0%{transform:scale(1);opacity:.7}100%{transform:scale(1.55);opacity:0}}
+
+/* ── NAV ── */
+nav{position:fixed;top:0;left:0;right:0;z-index:600;height:64px;padding:0 48px;display:flex;align-items:center;justify-content:space-between;background:rgba(13,13,13,0.94);backdrop-filter:blur(16px);border-bottom:1px solid rgba(137,233,0,0.08);}
+.nl{font-family:var(--bebas);font-size:26px;letter-spacing:.08em;color:var(--white);text-decoration:none;}
+.nl span{color:var(--kiwi);}
+.nm{display:flex;gap:32px;list-style:none;}
+.nm a{font-family:var(--mono);font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--mid);text-decoration:none;transition:color .2s;}
+.nm a:hover{color:var(--kiwi);}
+.nc{font-family:var(--mono);font-size:10px;letter-spacing:.14em;padding:8px 18px;border:1px solid var(--kiwi);color:var(--kiwi);text-transform:uppercase;text-decoration:none;transition:all .2s;cursor:none;}
+.nc:hover{background:var(--kiwi);color:var(--black);}
+
+/* ── HERO ── */
+#hero{min-height:100vh;position:relative;overflow:hidden;display:flex;flex-direction:column;justify-content:flex-end;padding:64px 48px 88px;}
+
+/* Three.js canvas sits behind everything */
+#threeCanvas{position:absolute;inset:0;z-index:0;pointer-events:none;}
+
+/* kiwi diagonal wash */
+#hero::before{content:'';position:absolute;top:-10%;right:-4%;width:52vw;height:130%;background:var(--kiwi);clip-path:polygon(20% 0%,100% 0%,100% 100%,0% 100%);z-index:1;opacity:.042;}
+
+.hero-bg-type{position:absolute;top:80px;left:0;right:0;overflow:hidden;z-index:1;opacity:.032;pointer-events:none;}
+.hbt-inner{display:flex;gap:56px;width:max-content;animation:tkr 26s linear infinite;}
+@keyframes tkr{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+.hbt-w{font-family:var(--bebas);font-size:160px;letter-spacing:.04em;color:var(--kiwi);white-space:nowrap;}
+
+.hero-scroll{position:absolute;bottom:36px;right:52px;z-index:3;writing-mode:vertical-rl;display:flex;align-items:center;gap:10px;font-family:var(--mono);font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:var(--mid);}
+.scl{width:1px;height:56px;background:linear-gradient(to bottom,var(--kiwi),transparent);animation:blink 1.8s ease infinite;}
+@keyframes blink{0%,100%{opacity:.3}50%{opacity:1}}
+
+.he{position:relative;z-index:3;}
+.heyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--kiwi);margin-bottom:18px;opacity:0;animation:up .7s ease .2s forwards;}
+.hh1{font-family:var(--bebas);font-size:clamp(72px,13vw,174px);line-height:.88;letter-spacing:.02em;margin-bottom:40px;opacity:0;animation:up .85s ease .35s forwards;}
+.hh1 .kv{color:var(--kiwi);}
+.hh1 .sk{-webkit-text-stroke:2px var(--white);color:transparent;}
+.hbot{display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:28px;opacity:0;animation:up .85s ease .55s forwards;}
+.hdesc{font-family:var(--body);font-size:15px;font-weight:300;color:#999;max-width:370px;line-height:1.75;}
+.hstats{display:flex;gap:0;}
+.hs{padding:0 28px;border-left:1px solid #252525;text-align:center;}
+.hs:first-child{border-left:none;padding-left:0;}
+.hs-n{font-family:var(--bebas);font-size:44px;color:var(--kiwi);line-height:1;display:block;}
+.hs-l{font-family:var(--mono);font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--mid);display:block;margin-top:3px;}
+@keyframes up{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
+
+/* ── KIWI BAR ── */
+.kb{height:4px;background:var(--kiwi);}
+
+/* ── 3D GLOBE SECTION ── */
+#globe-sec{position:relative;height:520px;overflow:hidden;background:var(--night);}
+#globeCanvas{position:absolute;inset:0;width:100%;height:100%;}
+.globe-overlay{position:absolute;inset:0;pointer-events:none;z-index:2;display:flex;align-items:center;padding:0 80px;}
+.globe-text{max-width:320px;}
+.gt-label{font-family:var(--mono);font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--kiwi);margin-bottom:14px;display:block;}
+.gt-h{font-family:var(--bebas);font-size:clamp(40px,5vw,72px);letter-spacing:.03em;line-height:.9;margin-bottom:20px;}
+.gt-h .sk{-webkit-text-stroke:2px var(--white);color:transparent;}
+.gt-p{font-family:var(--body);font-size:14px;font-weight:300;color:#777;line-height:1.7;}
+
+/* ── WORK ── */
+#work{padding:80px 48px 100px;}
+.wh{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:52px;flex-wrap:wrap;gap:20px;}
+.sec-label{font-family:var(--mono);font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--kiwi);margin-bottom:12px;display:block;}
+.sec-title{font-family:var(--bebas);font-size:clamp(44px,6vw,86px);letter-spacing:.03em;line-height:.9;}
+.sec-title .sk{-webkit-text-stroke:2px var(--white);color:transparent;}
+.fb{display:flex;gap:6px;flex-wrap:wrap;}
+.fbt{font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;padding:7px 15px;border:1px solid #2e2e2e;background:transparent;color:var(--mid);cursor:none;transition:all .2s;}
+.fbt.active,.fbt:hover{border-color:var(--kiwi);color:var(--kiwi);background:var(--kdim);}
+
+/* ── COLLAGE GRID ── */
+.wgrid{display:grid;grid-template-columns:repeat(12,1fr);gap:3px;}
+.wc{position:relative;overflow:hidden;cursor:none;background:var(--night);transition:opacity .3s,transform .4s;}
+.wc.dimmed{opacity:.07;pointer-events:none;}
+.wc:nth-child(1){grid-column:span 7;min-height:440px;}
+.wc:nth-child(2){grid-column:span 5;min-height:440px;}
+.wc:nth-child(3){grid-column:span 4;min-height:310px;}
+.wc:nth-child(4){grid-column:span 4;min-height:310px;}
+.wc:nth-child(5){grid-column:span 4;min-height:310px;}
+.wc:nth-child(6){grid-column:span 6;min-height:340px;}
+.wc:nth-child(7){grid-column:span 6;min-height:340px;}
+
+/* 3D tilt on hover via JS */
+.wc{transform-style:preserve-3d;perspective:800px;}
+
+.wc-bg{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;overflow:hidden;transition:transform .6s ease;}
+.wc:hover .wc-bg{transform:scale(1.06);}
+.wc-letter{font-family:var(--bebas);font-size:220px;color:transparent;-webkit-text-stroke:1px rgba(137,233,0,0.1);user-select:none;transition:transform .6s,opacity .4s;opacity:.45;}
+.wc:hover .wc-letter{transform:scale(1.18) rotate(-8deg);opacity:.9;}
+
+.wc::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--kiwi);transform:scaleX(0);transform-origin:left;transition:transform .4s;z-index:4;}
+.wc:hover::before{transform:scaleX(1);}
+
+/* Kiwi glow on hover */
+.wc::after{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 50% 120%,rgba(137,233,0,0.12) 0%,transparent 65%);opacity:0;transition:opacity .4s;z-index:1;}
+.wc:hover::after{opacity:1;}
+
+.wc-ov{position:absolute;inset:0;background:linear-gradient(150deg,transparent 20%,rgba(13,13,13,.96) 100%);display:flex;flex-direction:column;justify-content:flex-end;padding:28px;z-index:3;}
+.wc-tag{font-family:var(--mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--kiwi);margin-bottom:8px;display:block;}
+.wc-title{font-family:var(--bebas);font-size:30px;letter-spacing:.04em;color:var(--white);margin-bottom:6px;line-height:1;}
+.wc-desc{font-family:var(--body);font-size:13px;font-weight:300;color:#888;line-height:1.55;max-width:320px;opacity:0;transform:translateY(8px);transition:opacity .3s,transform .3s;}
+.wc:hover .wc-desc{opacity:1;transform:translateY(0);}
+.wc-arr{position:absolute;top:20px;right:20px;width:44px;height:44px;background:var(--kiwi);display:flex;align-items:center;justify-content:center;font-size:18px;color:var(--black);font-weight:700;opacity:0;transform:scale(.7);transition:opacity .3s,transform .3s;z-index:4;}
+.wc:hover .wc-arr{opacity:1;transform:scale(1);}
+
+/* ── RESULTS BAND ── */
+#results{padding:80px 48px;background:var(--kiwi);}
+.rg{display:grid;grid-template-columns:repeat(4,1fr);gap:3px;}
+.ri{background:rgba(0,0,0,0.08);padding:48px 32px;transition:background .3s;}
+.ri:hover{background:rgba(0,0,0,.18);}
+.ri-n{font-family:var(--bebas);font-size:clamp(50px,4.5vw,76px);color:var(--black);line-height:1;display:block;margin-bottom:6px;}
+.ri-l{font-family:var(--bebas);font-size:17px;letter-spacing:.05em;color:rgba(0,0,0,.7);display:block;margin-bottom:8px;}
+.ri-d{font-family:var(--body);font-size:13px;color:rgba(0,0,0,.5);line-height:1.5;}
+
+/* ── MARQUEE ── */
+#brands{border-top:1px solid #191919;border-bottom:1px solid #191919;}
+.mw{overflow:hidden;position:relative;padding:24px 0;background:var(--night);}
+.mw::before,.mw::after{content:'';position:absolute;top:0;bottom:0;width:80px;z-index:2;pointer-events:none;}
+.mw::before{left:0;background:linear-gradient(to right,var(--night),transparent);}
+.mw::after{right:0;background:linear-gradient(to left,var(--night),transparent);}
+.mt{display:flex;gap:44px;width:max-content;animation:tkr 22s linear infinite;align-items:center;}
+.mn{font-family:var(--bebas);font-size:18px;letter-spacing:.12em;color:#484848;white-space:nowrap;transition:color .2s;}
+.mn:hover{color:var(--kiwi);}
+.ms{color:var(--kiwi);font-size:11px;opacity:.4;}
+
+/* ── 3D FLOATING CARDS SECTION ── */
+#float3d{position:relative;height:480px;overflow:hidden;background:var(--black);}
+#floatCanvas{position:absolute;inset:0;width:100%;height:100%;}
+.f3d-overlay{position:absolute;inset:0;pointer-events:none;z-index:2;display:flex;align-items:center;justify-content:flex-end;padding:0 80px;}
+.f3d-text{max-width:300px;text-align:right;}
+.f3d-label{font-family:var(--mono);font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--kiwi);margin-bottom:14px;display:block;}
+.f3d-h{font-family:var(--bebas);font-size:clamp(40px,4.5vw,68px);letter-spacing:.03em;line-height:.9;margin-bottom:16px;}
+.f3d-p{font-family:var(--body);font-size:13px;font-weight:300;color:#666;line-height:1.7;}
+
+/* ── FOOTER ── */
+footer{border-top:3px solid var(--kiwi);padding:40px 48px;background:var(--night);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:20px;}
+.fl{font-family:var(--bebas);font-size:26px;letter-spacing:.08em;}
+.fl span{color:var(--kiwi);}
+.fc-links{display:flex;gap:32px;align-items:center;}
+.fc-links a{font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--mid);text-decoration:none;transition:color .2s;}
+.fc-links a:hover{color:var(--kiwi);}
+.fcp{font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:#333;}
+
+/* ── MODAL ── */
+#modal{position:fixed;inset:0;z-index:9000;background:rgba(13,13,13,.97);backdrop-filter:blur(10px);display:none;flex-direction:column;opacity:0;transition:opacity .3s;}
+#modal.open{display:flex;}
+#modal.visible{opacity:1;}
+.mbar{height:58px;background:var(--night);border-bottom:3px solid var(--kiwi);display:flex;align-items:center;justify-content:space-between;padding:0 24px;gap:16px;flex-shrink:0;}
+.mleft{display:flex;align-items:center;gap:14px;flex:1;min-width:0;}
+.mdot{width:8px;height:8px;background:var(--kiwi);border-radius:50%;flex-shrink:0;animation:blink 1.4s ease infinite;}
+.mtitle{font-family:var(--bebas);font-size:20px;letter-spacing:.07em;color:var(--white);flex-shrink:0;}
+.murl{font-family:var(--mono);font-size:11px;color:var(--mid);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.macts{display:flex;gap:8px;align-items:center;flex-shrink:0;}
+.mbtn{font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;padding:8px 16px;border:1px solid #444;background:transparent;color:var(--mid);cursor:none;text-decoration:none;transition:all .2s;}
+.mbtn:hover{border-color:var(--kiwi);color:var(--kiwi);}
+.mclose{width:42px;height:42px;background:#333;border:none;color:var(--white);font-size:18px;display:flex;align-items:center;justify-content:center;cursor:none;transition:background .2s;flex-shrink:0;}
+.mclose:hover{background:var(--kiwi);color:var(--black);}
+.mfw{flex:1;position:relative;overflow:hidden;}
+.mfw iframe{width:100%;height:100%;border:none;}
+.mload{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;background:var(--black);z-index:2;transition:opacity .4s;}
+.mload.hidden{opacity:0;pointer-events:none;}
+.lring{width:56px;height:56px;border:2px solid #333;border-top-color:var(--kiwi);border-radius:50%;animation:spin .9s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg)}}
+.ltxt{font-family:var(--mono);font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--mid);}
+.lurl{font-family:var(--mono);font-size:11px;color:var(--kiwi);}
+.mblk{position:absolute;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;gap:24px;background:var(--black);z-index:3;text-align:center;padding:40px;}
+.mblk.show{display:flex;}
+.blkico{font-size:52px;}
+.blktitle{font-family:var(--bebas);font-size:34px;letter-spacing:.06em;}
+.blkmsg{font-family:var(--body);font-size:14px;font-weight:300;color:#666;max-width:380px;line-height:1.7;}
+.blkopen{font-family:var(--bebas);font-size:20px;letter-spacing:.1em;padding:14px 36px;background:var(--kiwi);color:var(--black);text-decoration:none;transition:background .2s;display:inline-block;}
+.blkopen:hover{background:var(--white);}
+
+/* ── REVEAL ── */
+.rv{opacity:0;transform:translateY(32px);transition:opacity .75s ease,transform .75s ease;}
+.rv.vis{opacity:1;transform:translateY(0);}
+.d1{transition-delay:.1s}.d2{transition-delay:.2s}.d3{transition-delay:.3s}.d4{transition-delay:.4s}
+
+@media(max-width:900px){
+  nav{padding:0 20px;} .nm{display:none;}
+  #work,.globe-overlay,.f3d-overlay{padding-left:24px;padding-right:24px;}
+  #work{padding:60px 20px 80px;}
+  .wgrid{grid-template-columns:1fr;}
+  .wc{grid-column:span 1 !important;min-height:260px !important;}
+  .rg{grid-template-columns:1fr 1fr;}
+  #results{padding:60px 20px;}
+  footer{padding:32px 20px;flex-direction:column;align-items:flex-start;gap:16px;}
+  .hstats{flex-wrap:wrap;}
+  #globe-sec,#float3d{height:360px;}
+  .globe-overlay,.f3d-overlay{align-items:flex-end;padding:32px 24px;}
+}
+</style>
+</head>
+<body>
+
+<div id="cur"></div>
+
+<!-- WhatsApp -->
+<a class="wa" href="https://wa.me/918789633034?text=Hi%20Faiz!%20I%20saw%20your%20portfolio%20and%20I%27d%20like%20to%20discuss%20a%20project." target="_blank" rel="noopener">
+  <div class="wa-ring"></div>
+  <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+</a>
+
+<!-- NAV -->
+<nav>
+  <a href="#" class="nl">BRAND<span>BEAR</span></a>
+  <ul class="nm">
+    <li><a href="#work">Work</a></li>
+    <li><a href="#results">Results</a></li>
+    <li><a href="#brands">Clients</a></li>
+  </ul>
+  <a href="https://wa.me/918789633034" target="_blank" class="nc">Let's Talk →</a>
+</nav>
+
+<!-- ═══════ HERO ═══════ -->
+<section id="hero">
+  <canvas id="threeCanvas"></canvas>
+  <div class="hero-bg-type" aria-hidden="true">
+    <div class="hbt-inner">
+      <span class="hbt-w">BRANDBEAR</span><span class="hbt-w">BRANDBEAR</span>
+      <span class="hbt-w">BRANDBEAR</span><span class="hbt-w">BRANDBEAR</span>
+    </div>
+  </div>
+  <div class="hero-scroll"><span>Scroll</span><div class="scl"></div></div>
+  <div class="he">
+    <p class="heyebrow">✦ Faiz · BrandBear Studio · Bangalore</p>
+    <h1 class="hh1">
+      <span class="sk">WEB</span><br>
+      DESIGN<br>
+      THAT <span class="kv">SELLS.</span>
+    </h1>
+    <div class="hbot">
+      <p class="hdesc">End-to-end ecom brand building — storefronts, identities & performance systems for founders who refuse to blend in.</p>
+      <div class="hstats">
+        <div class="hs"><span class="hs-n">27+</span><span class="hs-l">Brands Built</span></div>
+        <div class="hs"><span class="hs-n">3.7%</span><span class="hs-l">Conv. Rate</span></div>
+        <div class="hs"><span class="hs-n">+25%</span><span class="hs-l">Revenue Lift</span></div>
+        <div class="hs"><span class="hs-n">+15–25%</span><span class="hs-l">AOV Increase</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="kb"></div>
+
+<!-- ═══════ 3D GLOBE SECTION ═══════ -->
+<div id="globe-sec">
+  <canvas id="globeCanvas"></canvas>
+  <div class="globe-overlay">
+    <div class="globe-text rv">
+      <span class="gt-label">Digital Presence</span>
+      <h2 class="gt-h">BRANDS THAT<br>TRAVEL <span class="sk">FAR.</span></h2>
+      <p class="gt-p">Built for markets that extend beyond borders. Every pixel engineered to perform globally.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════ WORK ═══════ -->
+<section id="work">
+  <div class="wh rv">
+    <div>
+      <span class="sec-label">Selected Work — Click to preview live</span>
+      <h2 class="sec-title">THE <span class="sk">WORK.</span></h2>
+    </div>
+    <div class="fb">
+      <button class="fbt active" data-f="all">All</button>
+      <button class="fbt" data-f="luxury">Luxury</button>
+      <button class="fbt" data-f="ecom">Ecom</button>
+      <button class="fbt" data-f="realestate">Real Estate</button>
+      <button class="fbt" data-f="b2b">B2B</button>
+    </div>
+  </div>
+
+  <div class="wgrid" id="wgrid">
+    <div class="wc" data-cat="luxury" data-url="https://predatorperfume.com" data-title="Predator Perfume">
+      <div class="wc-bg"><span class="wc-letter">P</span></div>
+      <div class="wc-ov">
+        <span class="wc-tag">Luxury Fragrance · Ecom · PageFly</span>
+        <div class="wc-title">PREDATOR PERFUME</div>
+        <p class="wc-desc">Single-product luxury fragrance. Dark, immersive ecom with Custom Liquid sections and bold editorial identity.</p>
+      </div>
+      <div class="wc-arr">↗</div>
+    </div>
+    <div class="wc" data-cat="luxury" data-url="https://adamspirit.com/" data-title="Adam Spirit">
+      <div class="wc-bg"><span class="wc-letter">A</span></div>
+      <div class="wc-ov">
+        <span class="wc-tag">Fragrance · Ecom</span>
+        <div class="wc-title">ADAM SPIRIT</div>
+        <p class="wc-desc">Premium fragrance with rich dark palette and immersive product experience.</p>
+      </div>
+      <div class="wc-arr">↗</div>
+    </div>
+    <div class="wc" data-cat="ecom" data-url="https://www.whitemuds.com/" data-title="White Muds">
+      <div class="wc-bg"><span class="wc-letter">W</span></div>
+      <div class="wc-ov">
+        <span class="wc-tag">Beauty · Ecom</span>
+        <div class="wc-title">WHITE MUDS</div>
+        <p class="wc-desc">Organic skincare with editorial layout and custom typography-first sections.</p>
+      </div>
+      <div class="wc-arr">↗</div>
+    </div>
+    <div class="wc" data-cat="ecom" data-url="https://supreemsuperfoods.com" data-title="Supreem Superfoods">
+      <div class="wc-bg"><span class="wc-letter">S</span></div>
+      <div class="wc-ov">
+        <span class="wc-tag">Health & Nutrition · D2C</span>
+        <div class="wc-title">SUPREEM SUPERFOODS</div>
+        <p class="wc-desc">High-converting storefront for a superfood brand targeting health-conscious buyers.</p>
+      </div>
+      <div class="wc-arr">↗</div>
+    </div>
+    <div class="wc" data-cat="ecom" data-url="https://bitaminnaturals.com/" data-title="Bitamin Naturals">
+      <div class="wc-bg"><span class="wc-letter">B</span></div>
+      <div class="wc-ov">
+        <span class="wc-tag">Wellness · Ecom</span>
+        <div class="wc-title">BITAMIN NATURALS</div>
+        <p class="wc-desc">Natural supplements brand. Earthy, product-first storefront built for trust and conversion.</p>
+      </div>
+      <div class="wc-arr">↗</div>
+    </div>
+    <div class="wc" data-cat="realestate" data-url="https://mayuragroup.com" data-title="Mayura Group">
+      <div class="wc-bg"><span class="wc-letter">M</span></div>
+      <div class="wc-ov">
+        <span class="wc-tag">Real Estate · Corporate</span>
+        <div class="wc-title">MAYURA GROUP</div>
+        <p class="wc-desc">Developer brand site with property showcases and conversion-focused enquiry flows.</p>
+      </div>
+      <div class="wc-arr">↗</div>
+    </div>
+    <div class="wc" data-cat="b2b" data-url="https://bmglasstech.com" data-title="BM Glasstech">
+      <div class="wc-bg"><span class="wc-letter">G</span></div>
+      <div class="wc-ov">
+        <span class="wc-tag">Industrial · B2B</span>
+        <div class="wc-title">BM GLASSTECH</div>
+        <p class="wc-desc">Lead-focused B2B site with credibility-first design and product catalogue.</p>
+      </div>
+      <div class="wc-arr">↗</div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════ RESULTS BAND ═══════ -->
+<div id="results">
+  <div class="rg">
+    <div class="ri rv"><span class="ri-n">3.7%</span><span class="ri-l">Conversion Rate</span><p class="ri-d">2× the industry average across ecom builds.</p></div>
+    <div class="ri rv d1"><span class="ri-n">+25–30%</span><span class="ri-l">Revenue Lift</span><p class="ri-d">Avg. revenue increase 90 days post-launch.</p></div>
+    <div class="ri rv d2"><span class="ri-n">+15–25%</span><span class="ri-l">AOV Increase</span><p class="ri-d">Through upsell flows and product presentation.</p></div>
+    <div class="ri rv d3"><span class="ri-n">27+</span><span class="ri-l">Brands Built</span><p class="ri-d">Ecom, luxury, real estate, legal, and B2B.</p></div>
+  </div>
+</div>
+
+<!-- ═══════ MARQUEE ═══════ -->
+<div id="brands">
+  <div class="mw">
+    <div class="mt">
+      <span class="mn">SPARKVITALS</span><span class="ms">✦</span>
+      <span class="mn">TRENDSRB</span><span class="ms">✦</span>
+      <span class="mn">SKYRUBYS</span><span class="ms">✦</span>
+      <span class="mn">PETHEAL</span><span class="ms">✦</span>
+      <span class="mn">BITSYBOXY</span><span class="ms">✦</span>
+      <span class="mn">AVOLAY</span><span class="ms">✦</span>
+      <span class="mn">DRYORCHIDS</span><span class="ms">✦</span>
+      <span class="mn">SARLAXMI</span><span class="ms">✦</span>
+      <span class="mn">SANAFF</span><span class="ms">✦</span>
+      <span class="mn">IRORUN</span><span class="ms">✦</span>
+      <span class="mn">PREDATOR</span><span class="ms">✦</span>
+      <span class="mn">SPARKVITALS</span><span class="ms">✦</span>
+      <span class="mn">TRENDSRB</span><span class="ms">✦</span>
+      <span class="mn">SKYRUBYS</span><span class="ms">✦</span>
+      <span class="mn">PETHEAL</span><span class="ms">✦</span>
+      <span class="mn">BITSYBOXY</span><span class="ms">✦</span>
+      <span class="mn">AVOLAY</span><span class="ms">✦</span>
+      <span class="mn">DRYORCHIDS</span><span class="ms">✦</span>
+      <span class="mn">SARLAXMI</span><span class="ms">✦</span>
+      <span class="mn">SANAFF</span><span class="ms">✦</span>
+      <span class="mn">IRORUN</span><span class="ms">✦</span>
+      <span class="mn">PREDATOR</span><span class="ms">✦</span>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════ 3D FLOATING CARDS ═══════ -->
+<div id="float3d">
+  <canvas id="floatCanvas"></canvas>
+  <div class="f3d-overlay">
+    <div class="f3d-text rv">
+      <span class="f3d-label">The Studio</span>
+      <h2 class="f3d-h">ONE MIND.<br>FULL OUTPUT.</h2>
+      <p class="f3d-p">Strategy, design, development, and growth — handled by one operator with the precision of a full team.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════ FOOTER ═══════ -->
+<footer>
+  <div class="fl">BRAND<span>BEAR</span></div>
+  <div class="fc-links">
+    <a href="https://wa.me/918789633034" target="_blank">WhatsApp ↗</a>
+    <a href="tel:+918789633034">+91 87896 33034</a>
+    <a href="mailto:faizalarsalan2003@gmail.com">faizalarsalan2003@gmail.com</a>
+  </div>
+  <p class="fcp">© 2025 BrandBear · Bangalore</p>
+</footer>
+
+<!-- ═══════ MODAL ═══════ -->
+<div id="modal">
+  <div class="mbar">
+    <div class="mleft">
+      <div class="mdot"></div>
+      <span class="mtitle" id="mTitle">–</span>
+      <span class="murl" id="mUrl">–</span>
+    </div>
+    <div class="macts">
+      <a id="mOpen" href="#" target="_blank" rel="noopener" class="mbtn">Open in New Tab ↗</a>
+      <button class="mclose" id="mClose">✕</button>
+    </div>
+  </div>
+  <div class="mfw">
+    <div class="mload" id="mLoad">
+      <div class="lring"></div>
+      <div class="ltxt">Loading Preview</div>
+      <div class="lurl" id="lUrl"></div>
+    </div>
+    <div class="mblk" id="mBlk">
+      <div class="blkico">🔒</div>
+      <div class="blktitle">Preview Restricted</div>
+      <p class="blkmsg">This site blocks embedding. Open it directly to view.</p>
+      <a id="blkOpen" href="#" target="_blank" rel="noopener" class="blkopen">Open Site ↗</a>
+    </div>
+    <iframe id="mFrame" src="" sandbox="allow-scripts allow-same-origin allow-forms allow-popups" title="Preview"></iframe>
+  </div>
+</div>
+
+<!-- ═══════ THREE.JS ═══════ -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+/* ─────────────────────────────────────
+   1.  HERO PARTICLE FIELD  (threeCanvas)
+───────────────────────────────────────*/
+(function(){
+  const canvas = document.getElementById('threeCanvas');
+  if(!canvas) return;
+  const renderer = new THREE.WebGLRenderer({canvas, alpha:true, antialias:true});
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio,2));
+  const hero = document.getElementById('hero');
+  renderer.setSize(hero.offsetWidth, hero.offsetHeight);
+
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(60, hero.offsetWidth/hero.offsetHeight, 0.1, 200);
+  camera.position.z = 60;
+
+  // Particle geometry — grid of dots
+  const COUNT = 2200;
+  const geo = new THREE.BufferGeometry();
+  const pos = new Float32Array(COUNT * 3);
+  const col = new Float32Array(COUNT * 3);
+  const kiwi = new THREE.Color('#89E900');
+  const white = new THREE.Color('#f0f0ee');
+
+  for(let i=0;i<COUNT;i++){
+    const i3=i*3;
+    pos[i3]   = (Math.random()-0.5)*160;
+    pos[i3+1] = (Math.random()-0.5)*100;
+    pos[i3+2] = (Math.random()-0.5)*60;
+    const c = Math.random() < 0.12 ? kiwi : white;
+    col[i3]=c.r; col[i3+1]=c.g; col[i3+2]=c.b;
+  }
+  geo.setAttribute('position', new THREE.BufferAttribute(pos,3));
+  geo.setAttribute('color',    new THREE.BufferAttribute(col,3));
+
+  const mat = new THREE.PointsMaterial({size:.55,vertexColors:true,transparent:true,opacity:.55,sizeAttenuation:true});
+  const pts = new THREE.Points(geo,mat);
+  scene.add(pts);
+
+  // Mouse parallax
+  let mx=0, my=0;
+  window.addEventListener('mousemove',e=>{
+    mx=(e.clientX/window.innerWidth-.5)*2;
+    my=-(e.clientY/window.innerHeight-.5)*2;
+  });
+
+  let raf;
+  function tick(){
+    raf=requestAnimationFrame(tick);
+    pts.rotation.y += .0006;
+    pts.rotation.x += .0002;
+    camera.position.x += (mx*8 - camera.position.x)*0.04;
+    camera.position.y += (my*4 - camera.position.y)*0.04;
+    renderer.render(scene,camera);
+  }
+  tick();
+
+  const obs=new IntersectionObserver(([e])=>{
+    if(e.isIntersecting) tick(); else cancelAnimationFrame(raf);
+  },{threshold:0.01});
+  obs.observe(hero);
+
+  window.addEventListener('resize',()=>{
+    const w=hero.offsetWidth, h=hero.offsetHeight;
+    camera.aspect=w/h; camera.updateProjectionMatrix();
+    renderer.setSize(w,h);
+  });
+})();
+
+/* ─────────────────────────────────────
+   2.  GLOBE  (globeCanvas)
+───────────────────────────────────────*/
+(function(){
+  const canvas = document.getElementById('globeCanvas');
+  const sec    = document.getElementById('globe-sec');
+  if(!canvas||!sec) return;
+  const W=sec.offsetWidth, H=sec.offsetHeight;
+  const renderer=new THREE.WebGLRenderer({canvas,alpha:true,antialias:true});
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio,2));
+  renderer.setSize(W,H);
+  const scene=new THREE.Scene();
+  const camera=new THREE.PerspectiveCamera(50,W/H,0.1,200);
+  camera.position.set(20,8,32);
+  camera.lookAt(0,0,0);
+
+  // Sphere wireframe
+  const sGeo=new THREE.SphereGeometry(10,36,36);
+  const sMat=new THREE.MeshBasicMaterial({color:0x89E900,wireframe:true,transparent:true,opacity:.13});
+  const sphere=new THREE.Mesh(sGeo,sMat);
+  scene.add(sphere);
+
+  // Solid inner sphere
+  const iGeo=new THREE.SphereGeometry(9.6,32,32);
+  const iMat=new THREE.MeshBasicMaterial({color:0x111111,transparent:true,opacity:.85});
+  scene.add(new THREE.Mesh(iGeo,iMat));
+
+  // Dots on sphere surface
+  const dGeo=new THREE.BufferGeometry();
+  const dPos=[];
+  for(let i=0;i<600;i++){
+    const phi=Math.acos(1-2*(i+.5)/600);
+    const theta=Math.PI*(1+Math.sqrt(5))*i;
+    const r=10.15;
+    dPos.push(r*Math.sin(phi)*Math.cos(theta), r*Math.cos(phi), r*Math.sin(phi)*Math.sin(theta));
+  }
+  dGeo.setAttribute('position',new THREE.BufferAttribute(new Float32Array(dPos),3));
+  const dMat=new THREE.PointsMaterial({color:0x89E900,size:.35,transparent:true,opacity:.7});
+  scene.add(new THREE.Points(dGeo,dMat));
+
+  // Orbital ring
+  const rGeo=new THREE.TorusGeometry(12.5,0.06,8,120);
+  const rMat=new THREE.MeshBasicMaterial({color:0x89E900,transparent:true,opacity:.35});
+  const ring=new THREE.Mesh(rGeo,rMat);
+  ring.rotation.x=Math.PI/2.4;
+  scene.add(ring);
+
+  // Second ring tilted
+  const ring2=new THREE.Mesh(
+    new THREE.TorusGeometry(14,0.04,8,120),
+    new THREE.MeshBasicMaterial({color:0x89E900,transparent:true,opacity:.18})
+  );
+  ring2.rotation.x=Math.PI/1.6;
+  ring2.rotation.z=Math.PI/5;
+  scene.add(ring2);
+
+  let mxG=0,myG=0;
+  window.addEventListener('mousemove',e=>{mxG=(e.clientX/window.innerWidth-.5);myG=-(e.clientY/window.innerHeight-.5);});
+
+  let rafG;
+  function tickG(){
+    rafG=requestAnimationFrame(tickG);
+    sphere.rotation.y+=.003;
+    ring.rotation.z+=.004;
+    ring2.rotation.z-=.002;
+    sphere.rotation.x += (myG*.5 - sphere.rotation.x)*.02;
+    renderer.render(scene,camera);
+  }
+  const obs=new IntersectionObserver(([e])=>{
+    if(e.isIntersecting) tickG(); else cancelAnimationFrame(rafG);
+  },{threshold:0.01});
+  obs.observe(sec);
+
+  window.addEventListener('resize',()=>{
+    const nW=sec.offsetWidth,nH=sec.offsetHeight;
+    camera.aspect=nW/nH; camera.updateProjectionMatrix(); renderer.setSize(nW,nH);
+  });
+})();
+
+/* ─────────────────────────────────────
+   3.  FLOATING 3D CARDS  (floatCanvas)
+───────────────────────────────────────*/
+(function(){
+  const canvas=document.getElementById('floatCanvas');
+  const sec=document.getElementById('float3d');
+  if(!canvas||!sec) return;
+  const W=sec.offsetWidth, H=sec.offsetHeight;
+  const renderer=new THREE.WebGLRenderer({canvas,alpha:true,antialias:true});
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio,2));
+  renderer.setSize(W,H);
+  const scene=new THREE.Scene();
+  const camera=new THREE.PerspectiveCamera(55,W/H,0.1,200);
+  camera.position.set(-8,0,40);
+  camera.lookAt(-8,0,0);
+
+  // Ambient
+  scene.add(new THREE.AmbientLight(0xffffff,.4));
+  const dirLight=new THREE.DirectionalLight(0x89E900,1.2);
+  dirLight.position.set(10,10,10);
+  scene.add(dirLight);
+
+  // Create floating card-like boxes
+  const cardData=[
+    {w:7,h:9,d:.4,x:-14,y:3,z:0,rx:.2,ry:.3},
+    {w:6,h:8,d:.4,x:-5,y:-2,z:4,rx:-.15,ry:-.4},
+    {w:5,h:7,d:.4,x:4,y:4,z:2,rx:.3,ry:.2},
+    {w:8,h:6,d:.4,x:12,y:-3,z:-2,rx:-.1,ry:.5},
+    {w:4,h:5,d:.4,x:20,y:2,z:5,rx:.25,ry:-.3},
+  ];
+
+  const cards=cardData.map((d,i)=>{
+    const geo=new THREE.BoxGeometry(d.w,d.h,d.d);
+    // Alternate kiwi edge / dark face
+    const mats=[
+      new THREE.MeshStandardMaterial({color:0x89E900,metalness:.3,roughness:.4}),
+      new THREE.MeshStandardMaterial({color:0x89E900,metalness:.3,roughness:.4}),
+      new THREE.MeshStandardMaterial({color:0x89E900,metalness:.3,roughness:.4}),
+      new THREE.MeshStandardMaterial({color:0x89E900,metalness:.3,roughness:.4}),
+      new THREE.MeshStandardMaterial({color:0x1a1a1a,metalness:.1,roughness:.7}),
+      new THREE.MeshStandardMaterial({color:0x222222,metalness:.1,roughness:.7}),
+    ];
+    const mesh=new THREE.Mesh(geo,mats);
+    mesh.position.set(d.x,d.y,d.z);
+    mesh.rotation.set(d.rx,d.ry,0);
+    mesh.userData={ox:d.x,oy:d.y,oz:d.z,phase:i*1.2};
+    scene.add(mesh);
+    return mesh;
+  });
+
+  // Thin kiwi lines
+  const lMat=new THREE.LineBasicMaterial({color:0x89E900,transparent:true,opacity:.25});
+  [-18,-10,-2,6,14,22].forEach(x=>{
+    const g=new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(x,-12,0),new THREE.Vector3(x,12,0)]);
+    scene.add(new THREE.Line(g,lMat));
+  });
+
+  let mxF=0,myF=0;
+  window.addEventListener('mousemove',e=>{mxF=(e.clientX/window.innerWidth-.5)*2;myF=-(e.clientY/window.innerHeight-.5)*2;});
+
+  let rafF,t=0;
+  function tickF(){
+    rafF=requestAnimationFrame(tickF);
+    t+=.012;
+    cards.forEach(c=>{
+      const ph=c.userData.phase;
+      c.position.y=c.userData.oy + Math.sin(t+ph)*.8;
+      c.rotation.y=c.userData && (Math.sin(t*.4+ph)*.15 + mxF*.06);
+      c.rotation.x=Math.sin(t*.3+ph)*.08 + myF*.04;
+    });
+    renderer.render(scene,camera);
+  }
+  const obs=new IntersectionObserver(([e])=>{
+    if(e.isIntersecting) tickF(); else cancelAnimationFrame(rafF);
+  },{threshold:0.01});
+  obs.observe(sec);
+
+  window.addEventListener('resize',()=>{
+    const nW=sec.offsetWidth,nH=sec.offsetHeight;
+    camera.aspect=nW/nH; camera.updateProjectionMatrix(); renderer.setSize(nW,nH);
+  });
+})();
+
+/* ─────────────────────────────────────
+   4.  CARD TILT  (collage hover)
+───────────────────────────────────────*/
+document.querySelectorAll('.wc').forEach(card=>{
+  card.addEventListener('mousemove',e=>{
+    const r=card.getBoundingClientRect();
+    const x=((e.clientX-r.left)/r.width-.5)*2;
+    const y=-((e.clientY-r.top)/r.height-.5)*2;
+    card.style.transform=`perspective(900px) rotateY(${x*6}deg) rotateX(${y*4}deg) scale(1.012)`;
+  });
+  card.addEventListener('mouseleave',()=>{
+    card.style.transform='perspective(900px) rotateY(0deg) rotateX(0deg) scale(1)';
+  });
+});
+
+/* ─────────────────────────────────────
+   5.  CURSOR
+───────────────────────────────────────*/
+const cur=document.getElementById('cur');
+document.addEventListener('mousemove',e=>{cur.style.left=e.clientX+'px';cur.style.top=e.clientY+'px';});
+document.querySelectorAll('a,button,.wc,.fbt,.mn,.ri,.wa').forEach(el=>{
+  el.addEventListener('mouseenter',()=>cur.classList.add('big'));
+  el.addEventListener('mouseleave',()=>cur.classList.remove('big'));
+});
+
+/* ─────────────────────────────────────
+   6.  SCROLL REVEAL
+───────────────────────────────────────*/
+const ro=new IntersectionObserver(es=>{
+  es.forEach(e=>{if(e.isIntersecting)e.target.classList.add('vis');});
+},{threshold:.08,rootMargin:'0px 0px -24px 0px'});
+document.querySelectorAll('.rv').forEach(r=>ro.observe(r));
+
+/* ─────────────────────────────────────
+   7.  FILTER
+───────────────────────────────────────*/
+document.querySelectorAll('.fbt').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    document.querySelectorAll('.fbt').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    const f=btn.dataset.f;
+    document.querySelectorAll('.wc').forEach(c=>{
+      c.classList.toggle('dimmed',f!=='all'&&c.dataset.cat!==f);
+    });
+  });
+});
+
+/* ─────────────────────────────────────
+   8.  MODAL
+───────────────────────────────────────*/
+const modal=document.getElementById('modal');
+const frame=document.getElementById('mFrame');
+const mLoad=document.getElementById('mLoad');
+const mBlk=document.getElementById('mBlk');
+const mUrl=document.getElementById('mUrl');
+const mTitle=document.getElementById('mTitle');
+const lUrl=document.getElementById('lUrl');
+const mOpen=document.getElementById('mOpen');
+const blkOpen=document.getElementById('blkOpen');
+let timer=null;
+
+function openModal(url,title){
+  modal.style.display='flex';
+  requestAnimationFrame(()=>requestAnimationFrame(()=>modal.classList.add('visible')));
+  mUrl.textContent=url; mTitle.textContent=title; lUrl.textContent=url;
+  mOpen.href=url; blkOpen.href=url;
+  mLoad.classList.remove('hidden'); mBlk.classList.remove('show');
+  frame.src=''; document.body.style.overflow='hidden';
+  clearTimeout(timer);
+  setTimeout(()=>{frame.src=url;},100);
+  timer=setTimeout(()=>{
+    if(!mLoad.classList.contains('hidden')){mLoad.classList.add('hidden');mBlk.classList.add('show');}
+  },8000);
+}
+frame.addEventListener('load',()=>{
+  clearTimeout(timer);
+  try{
+    const doc=frame.contentDocument||frame.contentWindow.document;
+    if(!doc||doc.body===null||(doc.title===''&&doc.body.innerHTML==='')){
+      mLoad.classList.add('hidden');mBlk.classList.add('show');
+    }else{mLoad.classList.add('hidden');}
+  }catch(e){mLoad.classList.add('hidden');}
+});
+frame.addEventListener('error',()=>{clearTimeout(timer);mLoad.classList.add('hidden');mBlk.classList.add('show');});
+function closeModal(){
+  modal.classList.remove('visible');clearTimeout(timer);
+  setTimeout(()=>{modal.style.display='none';frame.src='';mLoad.classList.remove('hidden');mBlk.classList.remove('show');document.body.style.overflow='';},300);
+}
+document.getElementById('mClose').addEventListener('click',closeModal);
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
+document.querySelectorAll('.wc').forEach(c=>{
+  c.addEventListener('click',()=>{
+    if(c.classList.contains('dimmed'))return;
+    if(c.dataset.url)openModal(c.dataset.url,c.dataset.title);
+  });
+});
+
+/* ─────────────────────────────────────
+   9.  HERO PARALLAX
+───────────────────────────────────────*/
+window.addEventListener('scroll',()=>{
+  const t=window.scrollY;
+  const ti=document.querySelector('.hbt-inner');
+  if(ti)ti.style.transform=`translateX(${-t*.08}px)`;
+},{passive:true});
+</script>
+</body>
+</html>
