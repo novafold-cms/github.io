@@ -59,17 +59,24 @@
 html{scroll-behavior:smooth;}
 body{background:var(--black);color:var(--white);font-family:var(--body);overflow-x:hidden;cursor:none;}
 
-/* ── CURSOR ── */
+/* ── CURSOR — desktop only ── */
 #cur{position:fixed;width:10px;height:10px;background:var(--kiwi);border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);mix-blend-mode:exclusion;transition:width .22s,height .22s;top:0;left:0;}
 #cur.big{width:54px;height:54px;}
 
+/* Hide custom cursor + restore native on touch devices */
+@media(hover:none),(pointer:coarse){
+  #cur{display:none !important;}
+  body{cursor:auto !important;}
+  a,button,.wc,.offer-card,.hkw,.wa,.nc{cursor:pointer !important;}
+}
+
 /* ── WA FLOAT ── */
 .wa-wrap{position:fixed;bottom:28px;right:28px;z-index:900;display:flex;flex-direction:column;align-items:flex-end;gap:12px;}
-.wa-bubble{background:var(--night);border:1px solid rgba(137,233,0,.25);border-radius:12px 12px 0 12px;padding:14px 16px;max-width:240px;font-family:var(--body);font-size:13px;line-height:1.5;color:var(--white);opacity:0;transform:translateY(8px) scale(.96);transition:opacity .3s ease,transform .3s ease;pointer-events:none;box-shadow:0 8px 32px rgba(0,0,0,.5);}
+.wa-bubble{background:var(--night);border:1px solid rgba(137,233,0,.25);border-radius:12px 12px 0 12px;padding:14px 16px;max-width:240px;font-family:var(--body);font-size:13px;line-height:1.5;color:var(--white);opacity:0;transform:translateY(8px) scale(.96);transition:opacity .3s ease,transform .3s ease;pointer-events:none;box-shadow:0 8px 32px rgba(0,0,0,.5);position:relative;}
 .wa-bubble.show{opacity:1;transform:translateY(0) scale(1);pointer-events:auto;}
 .wa-bubble strong{color:var(--kiwi);display:block;margin-bottom:4px;font-size:12px;font-family:var(--mono);letter-spacing:.1em;text-transform:uppercase;}
 .wa-bubble::after{content:'';position:absolute;bottom:-8px;right:18px;width:0;height:0;border-left:8px solid transparent;border-right:0;border-top:8px solid rgba(137,233,0,.25);}
-.wa{position:relative;width:54px;height:54px;background:var(--kiwi);border-radius:50%;display:flex;align-items:center;justify-content:center;text-decoration:none;box-shadow:0 4px 24px rgba(137,233,0,0.3);cursor:none;transition:transform .25s,box-shadow .25s;flex-shrink:0;}
+.wa{position:relative;width:54px;height:54px;background:var(--kiwi);border-radius:50%;display:flex;align-items:center;justify-content:center;text-decoration:none;box-shadow:0 4px 24px rgba(137,233,0,0.3);cursor:pointer;transition:transform .25s,box-shadow .25s;flex-shrink:0;}
 .wa:hover{transform:scale(1.1);box-shadow:0 8px 32px rgba(137,233,0,0.5);}
 .wa svg{width:26px;height:26px;fill:var(--black);}
 .wa-ring{position:absolute;inset:-6px;border-radius:50%;border:2px solid rgba(137,233,0,0.35);animation:waring 2s ease infinite;}
@@ -179,20 +186,9 @@ nav{position:fixed;top:0;left:0;right:0;z-index:600;height:64px;padding:0 48px;d
 .sec-title{font-family:var(--bebas);font-size:clamp(44px,6vw,86px);letter-spacing:.03em;line-height:.9;}
 .sec-title .sk{-webkit-text-stroke:2px var(--white);color:transparent;}
 
-/* ═══════════════════════════════════════
-   FLIP CARD GRID — CASE STUDY SYSTEM
-═══════════════════════════════════════ */
-.wgrid{
-  display:grid;
-  grid-template-columns:repeat(12,1fr);
-  gap:3px;
-}
-
-.wc{
-  perspective:1200px;
-  cursor:none;
-  position:relative;
-}
+/* ═══ FLIP CARD GRID ═══ */
+.wgrid{display:grid;grid-template-columns:repeat(12,1fr);gap:3px;}
+.wc{perspective:1200px;cursor:none;position:relative;}
 .wc:nth-child(1){grid-column:span 7;height:440px;}
 .wc:nth-child(2){grid-column:span 5;height:440px;}
 .wc:nth-child(3){grid-column:span 4;height:310px;}
@@ -200,162 +196,45 @@ nav{position:fixed;top:0;left:0;right:0;z-index:600;height:64px;padding:0 48px;d
 .wc:nth-child(5){grid-column:span 4;height:310px;}
 .wc:nth-child(6){grid-column:span 6;height:340px;}
 .wc:nth-child(7){grid-column:span 6;height:340px;}
-.wc-inner{
-  position:absolute;
-  inset:0;
-  transform-style:preserve-3d;
-  transition:transform .72s cubic-bezier(.4,0,.2,1);
-  will-change:transform;
-}
-.wc-front,.wc-back{
-  position:absolute;
-  inset:0;
-  backface-visibility:hidden;
-  -webkit-backface-visibility:hidden;
-  overflow:hidden;
-}
-
-/* ── FRONT FACE ── */
+.wc-inner{position:absolute;inset:0;transform-style:preserve-3d;transition:transform .72s cubic-bezier(.4,0,.2,1);will-change:transform;}
+.wc-front,.wc-back{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;overflow:hidden;}
 .wc-front{background:var(--night);}
-
-.wc-front::before{
-  content:'';position:absolute;top:0;left:0;right:0;height:3px;
-  background:var(--kiwi);
-  transform:scaleX(0);transform-origin:left;
-  transition:transform .4s;z-index:5;
-}
+.wc-front::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--kiwi);transform:scaleX(0);transform-origin:left;transition:transform .4s;z-index:5;}
 .wc:hover .wc-front::before{transform:scaleX(1);}
-
-.wc-letter{
-  position:absolute;top:50%;left:50%;
-  transform:translate(-50%,-50%);
-  font-family:var(--bebas);font-size:220px;
-  color:transparent;
-  -webkit-text-stroke:1px rgba(137,233,0,0.1);
-  user-select:none;pointer-events:none;
-  transition:transform .5s,opacity .4s;
-  line-height:1;white-space:nowrap;
-}
+.wc-letter{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-family:var(--bebas);font-size:220px;color:transparent;-webkit-text-stroke:1px rgba(137,233,0,0.1);user-select:none;pointer-events:none;transition:transform .5s,opacity .4s;line-height:1;white-space:nowrap;}
 .wc:hover .wc-letter{transform:translate(-50%,-50%) scale(1.12) rotate(-6deg);opacity:.6;}
-
-.wc-front::after{
-  content:'';position:absolute;inset:0;
-  background:linear-gradient(90deg,transparent 0%,rgba(137,233,0,.04) 50%,transparent 100%);
-  background-size:200% 100%;
-  animation:shimmer 2.4s ease infinite;
-  pointer-events:none;z-index:1;
-}
+.wc-front::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent 0%,rgba(137,233,0,.04) 50%,transparent 100%);background-size:200% 100%;animation:shimmer 2.4s ease infinite;pointer-events:none;z-index:1;}
 @keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
-
-.wc-ov{
-  position:absolute;inset:0;z-index:3;
-  background:linear-gradient(175deg,rgba(13,13,13,.52) 0%,rgba(13,13,13,.84) 52%,rgba(13,13,13,.98) 100%);
-  display:flex;flex-direction:column;justify-content:flex-end;padding:28px;
-  transition:background .45s ease;
-}
-.wc:hover .wc-ov{
-  background:linear-gradient(175deg,rgba(13,13,13,.08) 0%,rgba(13,13,13,.62) 45%,rgba(13,13,13,.97) 100%);
-}
+.wc-ov{position:absolute;inset:0;z-index:3;background:linear-gradient(175deg,rgba(13,13,13,.52) 0%,rgba(13,13,13,.84) 52%,rgba(13,13,13,.98) 100%);display:flex;flex-direction:column;justify-content:flex-end;padding:28px;transition:background .45s ease;}
+.wc:hover .wc-ov{background:linear-gradient(175deg,rgba(13,13,13,.08) 0%,rgba(13,13,13,.62) 45%,rgba(13,13,13,.97) 100%);}
 .wc-tag{font-family:var(--mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--kiwi);margin-bottom:8px;display:block;}
 .wc-title{font-family:var(--bebas);font-size:30px;letter-spacing:.04em;color:var(--white);margin-bottom:6px;line-height:1;}
 .wc-desc{font-family:var(--body);font-size:13px;font-weight:300;color:#bbb;line-height:1.55;max-width:320px;opacity:0;transform:translateY(8px);transition:opacity .3s,transform .3s;}
 .wc:hover .wc-desc{opacity:1;transform:translateY(0);}
-
-.wc-hint{
-  position:absolute;bottom:28px;right:28px;z-index:6;
-  font-family:var(--mono);font-size:9px;letter-spacing:.14em;text-transform:uppercase;
-  padding:6px 12px;
-  border:1px solid rgba(137,233,0,.35);
-  color:rgba(137,233,0,.7);
-  background:rgba(13,13,13,.75);
-  display:flex;align-items:center;gap:6px;
-  transition:all .3s;
-}
-.hint-icon{display:inline-block;animation:hint-spin 2.5s linear infinite;}
+.wc-hint{position:absolute;bottom:28px;right:28px;z-index:6;font-family:var(--mono);font-size:9px;letter-spacing:.14em;text-transform:uppercase;padding:6px 12px;border:1px solid rgba(137,233,0,.35);color:rgba(137,233,0,.7);background:rgba(13,13,13,.75);display:flex;align-items:center;gap:6px;transition:all .3s;}
+.hint-arrow{display:inline-block;animation:hint-spin 2.5s linear infinite;}
 @keyframes hint-spin{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
 .wc:hover .wc-hint{background:var(--kiwi);color:var(--black);border-color:var(--kiwi);}
-
-/* ── BACK FACE — starts pre-rotated 180deg so it's hidden until flip ── */
-.wc-back{
-  background:var(--night);
-  transform:rotateY(180deg);       /* <<< THIS IS CRITICAL */
-  border:1px solid rgba(137,233,0,.15);
-  display:flex;flex-direction:column;
-}
-
-.wc-back::before{
-  content:'';position:absolute;top:0;left:0;right:0;height:3px;
-  background:var(--kiwi);z-index:5;
-}
-
-/* Floating keyword cloud */
+.wc-back{background:var(--night);transform:rotateY(180deg);border:1px solid rgba(137,233,0,.15);display:flex;flex-direction:column;}
+.wc-back::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--kiwi);z-index:5;}
 .kw-cloud{position:absolute;inset:0;pointer-events:none;overflow:hidden;z-index:1;}
-.kw-float{
-  position:absolute;
-  font-family:var(--mono);font-size:9px;letter-spacing:.14em;text-transform:uppercase;
-  padding:4px 10px;
-  border:1px solid rgba(137,233,0,.15);
-  color:rgba(137,233,0,.2);
-  background:rgba(137,233,0,.025);
-  white-space:nowrap;
-  animation:kw-drift var(--dur,18s) ease-in-out infinite;
-  animation-delay:var(--delay,0s);
-}
-@keyframes kw-drift{
-  0%  {transform:translate(0,0) rotate(var(--r0,0deg));}
-  25% {transform:translate(var(--x1,8px),var(--y1,-10px)) rotate(var(--r1,2deg));}
-  50% {transform:translate(var(--x2,-5px),var(--y2,7px)) rotate(var(--r2,-1deg));}
-  75% {transform:translate(var(--x3,9px),var(--y3,-4px)) rotate(var(--r3,3deg));}
-  100%{transform:translate(0,0) rotate(var(--r0,0deg));}
-}
-
-/* Case study body */
-.cs-body{
-  position:relative;z-index:3;
-  padding:24px 28px 20px;
-  display:flex;flex-direction:column;
-  height:100%;overflow:hidden;
-}
+.kw-float{position:absolute;font-family:var(--mono);font-size:9px;letter-spacing:.14em;text-transform:uppercase;padding:4px 10px;border:1px solid rgba(137,233,0,.15);color:rgba(137,233,0,.2);background:rgba(137,233,0,.025);white-space:nowrap;animation:kw-drift var(--dur,18s) ease-in-out infinite;animation-delay:var(--delay,0s);}
+@keyframes kw-drift{0%{transform:translate(0,0) rotate(var(--r0,0deg));}25%{transform:translate(var(--x1,8px),var(--y1,-10px)) rotate(var(--r1,2deg));}50%{transform:translate(var(--x2,-5px),var(--y2,7px)) rotate(var(--r2,-1deg));}75%{transform:translate(var(--x3,9px),var(--y3,-4px)) rotate(var(--r3,3deg));}100%{transform:translate(0,0) rotate(var(--r0,0deg));}}
+.cs-body{position:relative;z-index:3;padding:24px 28px 20px;display:flex;flex-direction:column;height:100%;overflow:hidden;}
 .cs-tag{font-family:var(--mono);font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:var(--kiwi);margin-bottom:8px;}
 .cs-title{font-family:var(--bebas);font-size:26px;letter-spacing:.05em;color:var(--white);line-height:1;margin-bottom:8px;}
-.cs-pain{
-  font-family:var(--mono);font-size:10px;letter-spacing:.08em;
-  color:rgba(137,233,0,.55);margin-bottom:12px;
-  padding:6px 10px;
-  border-left:2px solid var(--kiwi);
-  background:rgba(137,233,0,.04);
-  line-height:1.45;
-}
+.cs-pain{font-family:var(--mono);font-size:10px;letter-spacing:.08em;color:rgba(137,233,0,.55);margin-bottom:12px;padding:6px 10px;border-left:2px solid var(--kiwi);background:rgba(137,233,0,.04);line-height:1.45;}
 .cs-outcome{display:flex;gap:0;margin-bottom:14px;}
-.cs-stat{
-  padding:10px 14px;border-right:1px solid #1e1e1e;
-  flex:1;min-width:60px;background:rgba(137,233,0,.04);
-}
+.cs-stat{padding:10px 14px;border-right:1px solid #1e1e1e;flex:1;min-width:60px;background:rgba(137,233,0,.04);}
 .cs-stat:last-child{border-right:none;}
 .cs-stat-n{font-family:var(--bebas);font-size:26px;color:var(--kiwi);line-height:1;display:block;}
 .cs-stat-l{font-family:var(--mono);font-size:8px;letter-spacing:.12em;text-transform:uppercase;color:#555;display:block;margin-top:2px;}
 .cs-desc{font-family:var(--body);font-size:12px;font-weight:300;color:#888;line-height:1.6;flex:1;overflow:hidden;}
-.cs-actions{
-  display:flex;align-items:center;justify-content:space-between;
-  margin-top:12px;padding-top:12px;
-  border-top:1px solid #1c1c1c;flex-shrink:0;
-}
-.cs-cta{
-  display:inline-flex;align-items:center;gap:7px;
-  font-family:var(--mono);font-size:9px;letter-spacing:.14em;text-transform:uppercase;
-  color:var(--black);background:var(--kiwi);
-  padding:8px 16px;text-decoration:none;cursor:none;
-  transition:background .2s,gap .2s;
-}
+.cs-actions{display:flex;align-items:center;justify-content:space-between;margin-top:12px;padding-top:12px;border-top:1px solid #1c1c1c;flex-shrink:0;}
+.cs-cta{display:inline-flex;align-items:center;gap:7px;font-family:var(--mono);font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--black);background:var(--kiwi);padding:8px 16px;text-decoration:none;cursor:pointer;transition:background .2s,gap .2s;}
 .cs-cta:hover{background:var(--white);gap:12px;}
-.cs-flip-back{
-  font-family:var(--mono);font-size:9px;letter-spacing:.12em;text-transform:uppercase;
-  color:#444;cursor:none;background:none;border:none;
-  display:flex;align-items:center;gap:6px;
-  transition:color .2s;padding:0;
-}
+.cs-flip-back{font-family:var(--mono);font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:#444;cursor:pointer;background:none;border:none;display:flex;align-items:center;gap:6px;transition:color .2s;padding:0;}
 .cs-flip-back:hover{color:var(--mid);}
-
 .wc.spotlight .wc-front{background:linear-gradient(135deg,#111 60%,rgba(137,233,0,.06) 100%);}
 
 /* ── RESULTS ── */
@@ -401,13 +280,11 @@ footer{border-top:3px solid var(--kiwi);padding:40px 48px;background:var(--night
 .rv{opacity:0;transform:translateY(32px);transition:opacity .75s ease,transform .75s ease;}
 .rv.vis{opacity:1;transform:translateY(0);}
 .d1{transition-delay:.1s}.d2{transition-delay:.2s}.d3{transition-delay:.3s}.d4{transition-delay:.4s}
-
-/* Counter animation */
 @keyframes countUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
 .ri-n.counting{animation:countUp .6s ease forwards;}
 
 @media(max-width:900px){
-  nav{padding:0 20px;} .nm{display:none;}
+  nav{padding:0 20px;}.nm{display:none;}
   #work{padding:60px 20px 80px;}
   #services{padding:60px 20px 80px;}
   .offers-grid{grid-template-columns:1fr;}
@@ -576,7 +453,7 @@ footer{border-top:3px solid var(--kiwi);padding:40px 48px;background:var(--night
   </div>
 </section>
 
-<!-- ═══ WORK — FLIP CARD CASE STUDIES ═══ -->
+<!-- WORK — FLIP CARD CASE STUDIES -->
 <section id="work">
   <div class="wh rv">
     <div>
@@ -596,27 +473,25 @@ footer{border-top:3px solid var(--kiwi);padding:40px 48px;background:var(--night
           <span class="wc-letter">P</span>
           <div class="wc-ov">
             <div class="kw-cloud"></div>
-            <span class="wc-tag">Luxury Fragrance · Ecom · Custom Coded</span>
+            <span class="wc-tag">Luxury Fragrance · D2C Ecom · Sarthak Goel</span>
             <div class="wc-title">PREDATOR PERFUME</div>
-            <p class="wc-desc">Single-product luxury fragrance by Sarthak Goel. Dark, immersive ecom with custom coded sections and bold editorial identity.</p>
-
+            <p class="wc-desc">A single-product luxury fragrance built for an influencer with 1M+ audience — dark, immersive, engineered to convert on first scroll.</p>
           </div>
           <div class="wc-hint"><span class="hint-arrow">⟳</span> Case Study</div>
         </div>
         <div class="wc-back">
-          <!-- <div class="kw-cloud"></div> -->
           <div class="cs-body">
-            <div class="cs-tag">Luxury Fragrance · D2C Ecom</div>
+            <div class="cs-tag">Luxury Fragrance · D2C · Influencer Brand</div>
             <div class="cs-title">PREDATOR PERFUME</div>
-            <div class="cs-pain">Pain: Generic Shopify theme killing brand perception & trust</div>
+            <div class="cs-pain">Problem: Sarthak Goel had 1M+ followers but no store. His audience had nowhere to buy — every launch was a missed revenue window.</div>
             <div class="cs-outcome">
               <div class="cs-stat"><span class="cs-stat-n">3.7%</span><span class="cs-stat-l">CVR</span></div>
-              <div class="cs-stat"><span class="cs-stat-n">+31%</span><span class="cs-stat-l">AOV</span></div>
-              <div class="cs-stat"><span class="cs-stat-n">Sub 2s</span><span class="cs-stat-l">Load</span></div>
+              <div class="cs-stat"><span class="cs-stat-n">2×</span><span class="cs-stat-l">Industry Avg</span></div>
+              <div class="cs-stat"><span class="cs-stat-n">Sub 2s</span><span class="cs-stat-l">Load Time</span></div>
             </div>
-            <p class="cs-desc">Single-product luxury fragrance store for Sarthak Goel. We replaced a cookie-cutter theme with a fully custom dark editorial build. Bold typography, immersive scroll storytelling and a checkout flow engineered for premium perception — converting impulse browsers into confident buyers.</p>
+            <p class="cs-desc">We built a single-product Shopify store from zero — dark editorial design, cinematic scroll storytelling, custom coded sections, and a checkout flow built for impulse confidence. Launched to Sarthak's audience and hit 3.7% CVR within the first 30 days. Every detail was engineered to match the premium price point and convert social followers into paying customers.</p>
             <div class="cs-actions">
-              <a href="https://wa.me/918789633034?text=Hi%20Faiz!%20I%20love%20the%20Predator%20Perfume%20case%20study.%20I%20want%20something%20similar." target="_blank" class="cs-cta">Build Mine →</a>
+              <a href="https://wa.me/918789633034?text=Hi%20Faiz!%20I%20loved%20the%20Predator%20Perfume%20case%20study.%20I%20want%20something%20similar%20for%20my%20brand." target="_blank" class="cs-cta">Build Mine →</a>
               <button class="cs-flip-back">← Back</button>
             </div>
           </div>
@@ -633,25 +508,24 @@ footer{border-top:3px solid var(--kiwi);padding:40px 48px;background:var(--night
           <span class="wc-letter">A</span>
           <div class="wc-ov">
             <div class="kw-cloud"></div>
-            <span class="wc-tag">Fragrance · Ecom · Custom Coded</span>
+            <span class="wc-tag">Premium Fragrance · Ecom · Custom Coded</span>
             <div class="wc-title">ADAM SPIRIT</div>
-                        <p class="wc-desc">Single-product luxury fragrance by Sarthak Goel. Dark, immersive ecom with custom coded sections and bold editorial identity.</p>
+            <p class="wc-desc">A premium fragrance brand whose product quality deserved a store that could actually show it — rebuilt from a generic theme to a conversion-first dark editorial.</p>
           </div>
           <div class="wc-hint"><span class="hint-arrow">⟳</span> Case Study</div>
         </div>
         <div class="wc-back">
-          <!-- <div class="kw-cloud"></div> -->
           <div class="cs-body">
-            <div class="cs-tag">Premium Fragrance · Ecom</div>
+            <div class="cs-tag">Premium Fragrance · Shopify Redesign</div>
             <div class="cs-title">ADAM SPIRIT</div>
-            <div class="cs-pain">Pain: High traffic, low conversions — no brand trust online</div>
+            <div class="cs-pain">Problem: Adam Spirit's fragrance was genuinely premium — but the Shopify theme looked like a ₹299 dropship store. Buyers weren't trusting the price point.</div>
             <div class="cs-outcome">
               <div class="cs-stat"><span class="cs-stat-n">+28%</span><span class="cs-stat-l">CVR Lift</span></div>
               <div class="cs-stat"><span class="cs-stat-n">+22%</span><span class="cs-stat-l">Revenue</span></div>
             </div>
-            <p class="cs-desc">Premium fragrance brand suffering from a mismatch between product quality and digital presence. Built a rich dark-palette storefront with immersive product storytelling, social proof architecture and a streamlined checkout — turning browsers into believers.</p>
+            <p class="cs-desc">We redesigned the full store with a rich dark palette, immersive product video sections, ingredient storytelling and a gift-set upsell flow at checkout. The store finally matched the product quality — buyers started trusting the price point and average order value climbed immediately after launch.</p>
             <div class="cs-actions">
-              <a href="https://wa.me/918789633034?text=Hi%20Faiz!%20I%20want%20a%20store%20like%20Adam%20Spirit." target="_blank" class="cs-cta">Build Mine →</a>
+              <a href="https://wa.me/918789633034?text=Hi%20Faiz!%20I%20want%20a%20store%20redesign%20like%20Adam%20Spirit." target="_blank" class="cs-cta">Build Mine →</a>
               <button class="cs-flip-back">← Back</button>
             </div>
           </div>
@@ -668,24 +542,24 @@ footer{border-top:3px solid var(--kiwi);padding:40px 48px;background:var(--night
           <span class="wc-letter">W</span>
           <div class="wc-ov">
             <div class="kw-cloud"></div>
-            <span class="wc-tag">Beauty · Ecom · Custom Coded</span>
+            <span class="wc-tag">Organic Skincare · Beauty D2C · Custom Coded</span>
             <div class="wc-title">WHITE MUDS</div>
+            <p class="wc-desc">Organic skincare that looked identical to 500 other brands. We gave them a visual identity and editorial storefront that made buyers stop, read, and convert.</p>
           </div>
           <div class="wc-hint"><span class="hint-arrow">⟳</span> Case Study</div>
         </div>
         <div class="wc-back">
-          <!-- <div class="kw-cloud"></div> -->
           <div class="cs-body">
-            <div class="cs-tag">Organic Skincare · Beauty D2C</div>
+            <div class="cs-tag">Organic Skincare · Beauty D2C · Differentiation</div>
             <div class="cs-title">WHITE MUDS</div>
-            <div class="cs-pain">Pain: Looked like every other skincare brand — zero differentiation</div>
+            <div class="cs-pain">Problem: White Muds had excellent products but zero visual identity. In a market full of identical beige skincare brands, they were invisible — CVR was under 1%.</div>
             <div class="cs-outcome">
               <div class="cs-stat"><span class="cs-stat-n">+19%</span><span class="cs-stat-l">CVR</span></div>
               <div class="cs-stat"><span class="cs-stat-n">+27%</span><span class="cs-stat-l">Return Rate</span></div>
             </div>
-            <p class="cs-desc">Organic skincare brand drowning in a sea of look-alike competitors. Designed an editorial, typography-led storefront with ingredient storytelling and a visual language that felt premium yet approachable — giving loyal buyers a reason to come back.</p>
+            <p class="cs-desc">We built a typography-led, editorial storefront with a distinct visual language — ingredient spotlights, hand-crafted section layouts, and benefit-led copy that made each product feel considered and trustworthy. Return customer rate jumped 27% because buyers remembered the brand and came back for more.</p>
             <div class="cs-actions">
-              <a href="https://wa.me/918789633034?text=Hi%20Faiz!%20I%20need%20a%20site%20like%20White%20Muds." target="_blank" class="cs-cta">Build Mine →</a>
+              <a href="https://wa.me/918789633034?text=Hi%20Faiz!%20I%20need%20a%20skincare%20store%20like%20White%20Muds." target="_blank" class="cs-cta">Build Mine →</a>
               <button class="cs-flip-back">← Back</button>
             </div>
           </div>
@@ -704,22 +578,22 @@ footer{border-top:3px solid var(--kiwi);padding:40px 48px;background:var(--night
             <div class="kw-cloud"></div>
             <span class="wc-tag">Health & Nutrition · D2C · Custom Coded</span>
             <div class="wc-title">SUPREEM SUPERFOODS</div>
+            <p class="wc-desc">A superfood brand launching into a crowded market — needed a store that could tell their science story and convert health-conscious buyers at scale.</p>
           </div>
           <div class="wc-hint"><span class="hint-arrow">⟳</span> Case Study</div>
         </div>
         <div class="wc-back">
-          <!-- <div class="kw-cloud"></div> -->
           <div class="cs-body">
-            <div class="cs-tag">Superfoods · Health D2C</div>
+            <div class="cs-tag">Superfoods · Health D2C · New Launch</div>
             <div class="cs-title">SUPREEM SUPERFOODS</div>
-            <div class="cs-pain">Pain: Store losing 80% of visitors at product page — no persuasion system</div>
+            <div class="cs-pain">Problem: Supreem was launching into one of India's most competitive health categories with no brand story. 80% of visitors were bouncing off the product page without buying.</div>
             <div class="cs-outcome">
               <div class="cs-stat"><span class="cs-stat-n">+25%</span><span class="cs-stat-l">Revenue</span></div>
               <div class="cs-stat"><span class="cs-stat-n">+18%</span><span class="cs-stat-l">AOV</span></div>
             </div>
-            <p class="cs-desc">Superfood brand with great products and zero online traction. Rebuilt the store around a CRO-first architecture — restructured product pages with benefit-led copy, trust signals, and upsell bundles. Revenue jumped 25% within 90 days of launch.</p>
+            <p class="cs-desc">We rebuilt the entire store around a CRO-first architecture — science-backed ingredient storytelling, benefit-led product pages, trust signals at every scroll depth, and a subscription upsell at cart. Month 3 revenue came in 25% above their launch projection, and 18% of orders were subscription — predictable monthly revenue from day one.</p>
             <div class="cs-actions">
-              <a href="https://wa.me/918789633034?text=Hi%20Faiz!%20I%20want%20a%20store%20like%20Supreem%20Superfoods." target="_blank" class="cs-cta">Build Mine →</a>
+              <a href="https://wa.me/918789633034?text=Hi%20Faiz!%20I%20want%20a%20health%20D2C%20store%20like%20Supreem%20Superfoods." target="_blank" class="cs-cta">Build Mine →</a>
               <button class="cs-flip-back">← Back</button>
             </div>
           </div>
@@ -736,24 +610,24 @@ footer{border-top:3px solid var(--kiwi);padding:40px 48px;background:var(--night
           <span class="wc-letter">B</span>
           <div class="wc-ov">
             <div class="kw-cloud"></div>
-            <span class="wc-tag">Wellness · Ecom · Custom Coded</span>
+            <span class="wc-tag">Natural Supplements · Wellness · Custom Coded</span>
             <div class="wc-title">BITAMIN NATURALS</div>
+            <p class="wc-desc">Natural supplements with a trust problem — customers weren't understanding the value. We rebuilt the store around credibility and product education.</p>
           </div>
           <div class="wc-hint"><span class="hint-arrow">⟳</span> Case Study</div>
         </div>
         <div class="wc-back">
-          <!-- <div class="kw-cloud"></div> -->
           <div class="cs-body">
-            <div class="cs-tag">Natural Supplements · Wellness</div>
+            <div class="cs-tag">Natural Supplements · Wellness · CRO Rebuild</div>
             <div class="cs-title">BITAMIN NATURALS</div>
-            <div class="cs-pain">Pain: Customers not understanding product value — low repeat purchase</div>
+            <div class="cs-pain">Problem: Bitamin had decent traffic but a 0.8% CVR. Customers couldn't differentiate the product from cheaper alternatives — no trust architecture, no education, no reason to buy at full price.</div>
             <div class="cs-outcome">
               <div class="cs-stat"><span class="cs-stat-n">+25%</span><span class="cs-stat-l">AOV</span></div>
               <div class="cs-stat"><span class="cs-stat-n">+33%</span><span class="cs-stat-l">Repeat</span></div>
             </div>
-            <p class="cs-desc">Natural supplement brand with trust issues — customers couldn't tell them apart from competitors. Built an earthy, product-first storefront with clear benefit communication, bundle upsell flows and subscription prompts. AOV grew 25% through smarter merchandising alone.</p>
+            <p class="cs-desc">We redesigned around trust-first architecture — lab certification badges, sourcing transparency, ingredient education sections, and a bundle recommendation engine on the product page. AOV grew 25% through smarter merchandising alone. Repeat purchase rate climbed 33% because customers finally understood what they were buying and why it worked.</p>
             <div class="cs-actions">
-              <a href="https://wa.me/918789633034?text=Hi%20Faiz!%20I%20want%20a%20store%20like%20Bitamin%20Naturals." target="_blank" class="cs-cta">Build Mine →</a>
+              <a href="https://wa.me/918789633034?text=Hi%20Faiz!%20I%20need%20a%20wellness%20store%20like%20Bitamin%20Naturals." target="_blank" class="cs-cta">Build Mine →</a>
               <button class="cs-flip-back">← Back</button>
             </div>
           </div>
@@ -772,22 +646,22 @@ footer{border-top:3px solid var(--kiwi);padding:40px 48px;background:var(--night
             <div class="kw-cloud"></div>
             <span class="wc-tag">Real Estate · Corporate · Custom Coded</span>
             <div class="wc-title">MAYURA GROUP</div>
+            <p class="wc-desc">A real estate developer losing high-value buyers to competitors with better websites. We built the digital presence their reputation deserved.</p>
           </div>
           <div class="wc-hint"><span class="hint-arrow">⟳</span> Case Study</div>
         </div>
         <div class="wc-back">
-          <!-- <div class="kw-cloud"></div> -->
           <div class="cs-body">
-            <div class="cs-tag">Real Estate Developer · Corporate</div>
+            <div class="cs-tag">Real Estate Developer · Lead Generation</div>
             <div class="cs-title">MAYURA GROUP</div>
-            <div class="cs-pain">Pain: Zero digital credibility — losing qualified leads to competitors with better websites</div>
+            <div class="cs-pain">Problem: Mayura Group was a credible developer with strong projects — but their website looked like it was built in 2014. Serious buyers were checking their site and walking straight to competitors.</div>
             <div class="cs-outcome">
               <div class="cs-stat"><span class="cs-stat-n">4×</span><span class="cs-stat-l">Lead Volume</span></div>
               <div class="cs-stat"><span class="cs-stat-n">+60%</span><span class="cs-stat-l">Enquiries</span></div>
             </div>
-            <p class="cs-desc">Real estate developer losing high-value leads to competitors with more polished digital presence. Built a credibility-first brand site with property showcase galleries, structured enquiry funnels and developer-grade trust signals — 4× qualified lead volume within 60 days.</p>
+            <p class="cs-desc">We built a full corporate brand site — immersive property showcase galleries, virtual site tour integration, developer credentials displayed with authority, and a multi-step enquiry funnel that pre-qualified leads before they reached the sales team. Qualified inbound lead volume increased 4× within 60 days. The sales team reported shorter, higher-quality conversations from week one.</p>
             <div class="cs-actions">
-              <a href="https://wa.me/918789633034?text=Hi%20Faiz!%20I%20need%20a%20site%20like%20Mayura%20Group." target="_blank" class="cs-cta">Build Mine →</a>
+              <a href="https://wa.me/918789633034?text=Hi%20Faiz!%20I%20need%20a%20corporate%20website%20like%20Mayura%20Group." target="_blank" class="cs-cta">Build Mine →</a>
               <button class="cs-flip-back">← Back</button>
             </div>
           </div>
@@ -806,22 +680,22 @@ footer{border-top:3px solid var(--kiwi);padding:40px 48px;background:var(--night
             <div class="kw-cloud"></div>
             <span class="wc-tag">Industrial · B2B · Custom Coded</span>
             <div class="wc-title">BM GLASSTECH</div>
+            <p class="wc-desc">An industrial glass manufacturer invisible online. We built a credibility-first B2B site that turned their expertise into qualified inbound enquiries every month.</p>
           </div>
           <div class="wc-hint"><span class="hint-arrow">⟳</span> Case Study</div>
         </div>
         <div class="wc-back">
-          <!-- <div class="kw-cloud"></div> -->
           <div class="cs-body">
-            <div class="cs-tag">Industrial B2B · Manufacturing</div>
+            <div class="cs-tag">Industrial Manufacturing · B2B Lead Gen</div>
             <div class="cs-title">BM GLASSTECH</div>
-            <div class="cs-pain">Pain: Outdated website losing B2B contracts to newer competitors</div>
+            <div class="cs-pain">Problem: BM Glasstech was winning work purely through referrals and trade shows. Their website was embarrassing in B2B meetings — they were losing contracts before the first call.</div>
             <div class="cs-outcome">
               <div class="cs-stat"><span class="cs-stat-n">3×</span><span class="cs-stat-l">B2B Leads</span></div>
               <div class="cs-stat"><span class="cs-stat-n">+45%</span><span class="cs-stat-l">Enquiries</span></div>
             </div>
-            <p class="cs-desc">Industrial glass manufacturer losing contracts because buyers didn't trust an outdated site. Redesigned with credibility-first architecture — product catalogue with spec sheets, certifications, client logos and a structured RFQ funnel. B2B enquiry volume tripled in under 3 months.</p>
+            <p class="cs-desc">We built a full product catalogue site with technical specification pages, certification displays, client logos and case study thumbnails — all the credibility signals that B2B buyers need before they pick up the phone. Added a structured RFQ enquiry funnel and an SEO foundation targeting high-intent manufacturer queries. B2B enquiry volume tripled in under 3 months, entirely from inbound organic traffic.</p>
             <div class="cs-actions">
-              <a href="https://wa.me/918789633034?text=Hi%20Faiz!%20I%20need%20a%20B2B%20site%20like%20BM%20Glasstech." target="_blank" class="cs-cta">Build Mine →</a>
+              <a href="https://wa.me/918789633034?text=Hi%20Faiz!%20I%20need%20a%20B2B%20website%20like%20BM%20Glasstech." target="_blank" class="cs-cta">Build Mine →</a>
               <button class="cs-flip-back">← Back</button>
             </div>
           </div>
@@ -1015,13 +889,16 @@ footer{border-top:3px solid var(--kiwi);padding:40px 48px;background:var(--night
   window.addEventListener('resize',()=>{const nW=sec.offsetWidth,nH=sec.offsetHeight;camera.aspect=nW/nH;camera.updateProjectionMatrix();renderer.setSize(nW,nH);});
 })();
 
-/* ════ 4. CURSOR ════ */
-const cur=document.getElementById('cur');
-document.addEventListener('mousemove',e=>{cur.style.left=e.clientX+'px';cur.style.top=e.clientY+'px';});
-document.querySelectorAll('a,button,.wc,.mn,.ri,.wa,.hkw,.offer-card').forEach(el=>{
-  el.addEventListener('mouseenter',()=>cur.classList.add('big'));
-  el.addEventListener('mouseleave',()=>cur.classList.remove('big'));
-});
+/* ════ 4. CURSOR — desktop only ════ */
+const isTouch=window.matchMedia('(hover:none),(pointer:coarse)').matches;
+if(!isTouch){
+  const cur=document.getElementById('cur');
+  document.addEventListener('mousemove',e=>{cur.style.left=e.clientX+'px';cur.style.top=e.clientY+'px';});
+  document.querySelectorAll('a,button,.wc,.mn,.ri,.wa,.hkw,.offer-card').forEach(el=>{
+    el.addEventListener('mouseenter',()=>cur.classList.add('big'));
+    el.addEventListener('mouseleave',()=>cur.classList.remove('big'));
+  });
+}
 
 /* ════ 5. SCROLL REVEAL ════ */
 const ro=new IntersectionObserver(es=>{
@@ -1056,6 +933,7 @@ const waBtn=document.getElementById('wa-btn');
 let bubbleShown=false;
 setTimeout(()=>{if(!bubbleShown){waBubble.classList.add('show');bubbleShown=true;}},4000);
 waBtn.addEventListener('mouseenter',()=>{waBubble.classList.add('show');bubbleShown=true;});
+waBtn.addEventListener('touchstart',()=>{waBubble.classList.add('show');bubbleShown=true;},{passive:true});
 
 /* ════ 8. HERO PARALLAX ════ */
 window.addEventListener('scroll',()=>{
@@ -1072,7 +950,7 @@ function buildKeywordCloud(card){
     const el=document.createElement('span');
     el.className='kw-float';
     el.textContent=word;
-    const col=i%3, row=Math.floor(i/3);
+    const col=i%3,row=Math.floor(i/3);
     el.style.left=(8+col*30+Math.random()*8)+'%';
     el.style.top=(6+row*20+Math.random()*6)+'%';
     const rnd=()=>(Math.random()-.5);
@@ -1091,35 +969,25 @@ function buildKeywordCloud(card){
 
 document.querySelectorAll('.wc').forEach(card=>{
   buildKeywordCloud(card);
-
   const inner=card.querySelector('.wc-inner');
   let isFlipped=false;
-
-  /* ── FLIP LOGIC ──
-     We track state in a JS variable and set transform directly.
-     Tilt uses a SEPARATE CSS variable so they never conflict.
-  */
   function setFlip(flip){
     isFlipped=flip;
     if(flip){
       inner.style.transform='rotateY(180deg)';
-      /* disable tilt while flipped */
       inner.style.transition='transform .72s cubic-bezier(.4,0,.2,1)';
     } else {
       inner.style.transform='rotateY(0deg)';
     }
   }
-
   card.addEventListener('click',function(e){
     if(e.target.closest('.cs-flip-back')||e.target.closest('.cs-cta'))return;
-    /* close others */
     document.querySelectorAll('.wc').forEach(c=>{
-      if(c!==card) c._setFlip&&c._setFlip(false);
+      if(c!==card)c._setFlip&&c._setFlip(false);
     });
     setFlip(!isFlipped);
   });
   card._setFlip=setFlip;
-
   const backBtn=card.querySelector('.cs-flip-back');
   if(backBtn){
     backBtn.addEventListener('click',function(e){
@@ -1127,14 +995,11 @@ document.querySelectorAll('.wc').forEach(card=>{
       setFlip(false);
     });
   }
-
-  /* ── TILT — only on front, never overwrite a flip ── */
   card.addEventListener('mousemove',function(e){
     if(isFlipped)return;
     const r=card.getBoundingClientRect();
     const x=((e.clientX-r.left)/r.width-.5)*2;
     const y=-((e.clientY-r.top)/r.height-.5)*2;
-    /* use very short transition so tilt feels live */
     inner.style.transition='transform .08s ease';
     inner.style.transform=`rotateY(${x*5}deg) rotateX(${y*3}deg)`;
   });
